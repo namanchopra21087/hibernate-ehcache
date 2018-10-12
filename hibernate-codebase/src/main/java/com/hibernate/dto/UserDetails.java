@@ -3,16 +3,23 @@
  */
 package com.hibernate.dto;
 
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 
 /**
  * @author Naman
  *
  */
 @Entity
+@Inheritance(strategy=InheritanceType.JOINED)
+@DiscriminatorColumn(discriminatorType=DiscriminatorType.STRING,name="USER_TYPE")
 public class UserDetails {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
