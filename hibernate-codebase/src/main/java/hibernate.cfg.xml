@@ -17,5 +17,7 @@
   <mapping class="com.hibernate.dto.AsiaUsers"></mapping>
   <mapping class="com.hibernate.dto.Employee"></mapping>
   <mapping class="com.hibernate.dto.Department"></mapping>
+    <mapping class="com.hibernate.dto.Classes"></mapping>
+      <mapping class="com.hibernate.dto.Student"></mapping>
 </session-factory>
 </hibernate-configuration>
