@@ -37,11 +37,15 @@ public class Main
     	try{
     		org.hibernate.Transaction tx=session.beginTransaction();
     		/**Saving entities*/
-    		saveUser(session);
+    		//saveUser(session);
     		/**One To Many Associations*/
-    		oneToManyAssociations(session, emp);
+    		//oneToManyAssociations(session, emp);
     		/**Many To Many Associations*/
-    		manyToManyAssociations(session);
+    		//manyToManyAssociations(session);
+    		
+    		//Classes clss=(Classes)session.get(Classes.class, new Long(50));
+    		Classes clss1=(Classes)session.load(Classes.class, new Long(50));
+    		clss1.getClassId();
     		tx.commit();
     	}catch(Exception e){
     		e.printStackTrace();
