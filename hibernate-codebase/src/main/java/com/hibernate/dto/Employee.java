@@ -13,17 +13,25 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+
+import com.hibernate.constants.DtoConstants;
 
 /**
  * @author Naman
  *
  */
+
+@NamedQueries({@NamedQuery(name=DtoConstants.EMPLOYEE_DEP_ID_NQ,query="from Employee e where e.dp.departmentId<=:"+DtoConstants.DEPARTMENT_ID+" order by e.name desc"),
+	@NamedQuery(name=DtoConstants.EMPLOYEE_ID_NQ,query="from Employee e where e.employeeId<=:"+DtoConstants.EMP_ID+" order by e.name desc")})
+@NamedNativeQuery(name=DtoConstants.EMPLOYEE_ID_NNQ,query="select * from EMPLOYEE e where e.EMPLOYEE_ID<=:"+DtoConstants.EMP_ID+" and e.NAME like '%C%'order by e.NAME desc",resultClass=Employee.class)
 @Entity
 @Table(name="EMPLOYEE")
 public class Employee {
-	
 	@Id
 	@GeneratedValue(strategy=GenerationType.SEQUENCE,generator="employee_sequence")
 	@SequenceGenerator(name="employee_sequence",sequenceName="SEQ_EMP",initialValue=1,allocationSize=1)
