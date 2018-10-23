@@ -17,6 +17,9 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projection;
+import org.hibernate.criterion.ProjectionList;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import com.hibernate.constants.DtoConstants;
@@ -53,7 +56,9 @@ public class Main
     		/**Named Queries*/
     		//namedQuery(session);
     		/**Criteria Query*/
-    		criteriaQuery(session);
+    		//criteriaQuery(session);
+    		/**Projections in criteria query */
+    		criteriaQueryWithProjections(session);
     		tx.commit();
     		
     		//Classes clss=(Classes)session.get(Classes.class, new Long(50));
@@ -67,6 +72,46 @@ public class Main
     	}
     	
     }
+
+	/**
+	 * @param session
+	 */
+	private static void criteriaQueryWithProjections(Session session) {
+		int departmentId=300;
+		Criteria query=session.createCriteria(Employee.class,"e")
+				.createAlias("e.dp", "eDp")
+				.setProjection(Projections.property("salary"))
+				.add(Restrictions.lt("eDp.departmentId", Long.valueOf(departmentId)))
+				.addOrder(Order.desc("e.name"));
+		/**Below query properties used for pagination */
+		query.setFirstResult(0);
+		query.setMaxResults(10);
+		List<BigDecimal> empList=(List<BigDecimal>)query.list();
+		int i=1;
+		System.out.println("Projections inside criteria query result for query with department id");
+		for(BigDecimal e:empList){
+			System.out.println(i+++" Salary:"+e);
+		}
+		
+		/**Another criteria query mapping with projections*/
+		ProjectionList prjList=Projections.projectionList();
+		prjList.add(Projections.property("name"));
+		prjList.add(Projections.property("salary"));
+		query=session.createCriteria(Employee.class,"e")
+				.createAlias("e.dp", "eDp")
+				.setProjection(prjList)
+				.add(Restrictions.lt("eDp.departmentId", Long.valueOf(departmentId)))
+				.addOrder(Order.desc("e.name"));
+		/**Below query properties used for pagination */
+		query.setFirstResult(0);
+		query.setMaxResults(10);
+		List<Object[]> empListObj=(List<Object[]>)query.list();
+		i=1;
+		System.out.println("Projections inside criteria query result for query with department id");
+		for(Object[] obj:empListObj){
+			System.out.println(i+++") Name:"+obj[0]+" Salary:"+obj[1]);
+		}
+	}
 
 	/**
 	 * Criteria query
@@ -87,16 +132,15 @@ public class Main
 		for(Employee e:empList){
 			System.out.println(i+++") Name:"+e.getName()+" Salary:"+e.getSalary());
 		}
-		
 		/**Another criteria query mapping*/
 		query=session.createCriteria(Employee.class,"e")
 				.createAlias("e.dp", "eDp")
 				//.add(Restrictions.between("eDp.departmentId", Long.valueOf(100), Long.valueOf(400)))
 				.add(Restrictions.or(Restrictions.eq("eDp.departmentId", Long.valueOf(100)),Restrictions.eq("eDp.departmentId", Long.valueOf(400))))
-				.addOrder(Order.desc("e.name"));
+				.addOrder(Order.desc("e.name"))
+				.setFirstResult(0)
+				.setMaxResults(10);
 		/**Below query properties used for pagination */
-		query.setFirstResult(0);
-		query.setMaxResults(10);
 		empList=(List<Employee>)query.list();
 		i=1;
 		System.out.println("Another criteria query mapping");
