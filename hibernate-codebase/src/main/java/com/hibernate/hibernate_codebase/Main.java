@@ -83,7 +83,7 @@ public class Main
 	private static Session queryLevelCache(SessionFactory factory,
 			Session session) {
 		Query query=session.createQuery("from Employee e where e.employeeId=6");
-		query.setCacheable(true);
+		query.setCacheable(true); /**Needs to set this property for implementing query caching*/
 		query.list();
 		session.close();
 		session=factory.openSession();
