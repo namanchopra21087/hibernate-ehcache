@@ -24,7 +24,7 @@ public class UserDetails {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	int userId;
-	String name;
+	String userName;
 	int age;
 	/**
 	 * @return the userId
@@ -42,13 +42,13 @@ public class UserDetails {
 	 * @return the name
 	 */
 	public String getName() {
-		return name;
+		return userName;
 	}
 	/**
 	 * @param name the name to set
 	 */
 	public void setName(String name) {
-		this.name = name;
+		this.userName = name;
 	}
 	/**
 	 * @return the age

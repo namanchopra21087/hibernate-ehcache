@@ -15,6 +15,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.cache.ehcache.EhCacheRegionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projection;
@@ -46,7 +47,6 @@ public class Main
     		org.hibernate.Transaction tx=session.beginTransaction();
     		/**Saving entities*/
     		//saveUser(session);
-    		System.out.println(((UserDetails)session.get(UserDetails.class, 1)).getName());
     		/**One To Many Associations*/
     		//oneToManyAssociations(session, emp);
     		/**Many To Many Associations*/
@@ -58,20 +58,62 @@ public class Main
     		/**Criteria Query*/
     		//criteriaQuery(session);
     		/**Projections in criteria query */
-    		criteriaQueryWithProjections(session);
+    		//criteriaQueryWithProjections(session);
     		tx.commit();
-    		
-    		//Classes clss=(Classes)session.get(Classes.class, new Long(50));
-    		//Classes clss1=(Classes)session.load(Classes.class, new Long(50));
-    		//clss1.getClassId();
-    		
+    		/**Second level cache*/
+    		session = secondLevelCacheHibernate(factory, session);
+    		/**Query level cache*/
+    		session = queryLevelCache(factory, session);
     	}catch(Exception e){
     		e.printStackTrace();
     	}finally{
     		session.close();
     	}
-    	
     }
+
+	/**
+	 * Query level caching.
+	 * <li>Set below property for enabling this feature in hinernate.cfg.xml</li>
+	 * <li><property name="hibernate.cache.use_query_cache">true</property></li>
+	 * @param factory
+	 * @param session
+	 * @return session
+	 */
+	@SuppressWarnings(value=DtoConstants.SUPPRESS_ALL_WARNINGS)
+	private static Session queryLevelCache(SessionFactory factory,
+			Session session) {
+		Query query=session.createQuery("from Employee e where e.employeeId=6");
+		query.setCacheable(true);
+		query.list();
+		session.close();
+		session=factory.openSession();
+		query=session.createQuery("from Employee e where e.employeeId=6");
+		query.setCacheable(true);
+		query.list();
+		return session;
+	}
+
+	/**
+	 * Hibernate second level caching.
+	 * <li>Set below property for enabling this feature in hinernate.cfg.xml</li>
+	 * <li>1) <property name="hibernate.cache.use_second_level_cache">true</property></li>
+	 * <li>2) <property name="hibernate.cache.use_query_cache">true</property></li>
+	 * <li>3) <property name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</property></li>
+	 * <li>4) <property name="hibernate.javax.cache.provide">net.sf.ehcache.hibernate.EhCacheProvider</property></li>
+	 * @param factory
+	 * @param session
+	 * @return session
+	 */
+	private static Session secondLevelCacheHibernate(SessionFactory factory,
+			Session session) {
+		session.close();
+		session=factory.openSession();
+		session.get(Employee.class, Long.valueOf(7));
+		session.close();
+		session=factory.openSession();
+		session.get(Employee.class, Long.valueOf(7));
+		return session;
+	}
 
 	/**
 	 * @param session

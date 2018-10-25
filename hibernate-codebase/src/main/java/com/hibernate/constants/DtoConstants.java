@@ -14,5 +14,5 @@ public interface DtoConstants {
 	String EMPLOYEE_ID_NNQ = "Employee.empIdNnq";
 	String DEPARTMENT_ID = "departmentId";
 	String EMP_ID="employeeId";
-
+	String SUPPRESS_ALL_WARNINGS = "all";
 }
