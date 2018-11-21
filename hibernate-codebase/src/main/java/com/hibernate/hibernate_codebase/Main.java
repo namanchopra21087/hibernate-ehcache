@@ -47,6 +47,7 @@ public class Main
     		org.hibernate.Transaction tx=session.beginTransaction();
     		/**Saving entities*/
     		//saveUser(session);
+    		mergeUser(session);
     		/**One To Many Associations*/
     		//oneToManyAssociations(session, emp);
     		/**Many To Many Associations*/
@@ -61,9 +62,9 @@ public class Main
     		//criteriaQueryWithProjections(session);
     		tx.commit();
     		/**Second level cache*/
-    		session = secondLevelCacheHibernate(factory, session);
+    		//session = secondLevelCacheHibernate(factory, session);
     		/**Query level cache*/
-    		session = queryLevelCache(factory, session);
+    		//session = queryLevelCache(factory, session);
     	}catch(Exception e){
     		e.printStackTrace();
     	}finally{
@@ -329,6 +330,22 @@ public class Main
 		session.save(eUser);
 		session.save(aUser);
 		session.update(user);
+	}
+	
+	/**
+	 * @param session
+	 */
+	private static void mergeUser(Session session) {
+		UserDetails user=new UserDetails();
+		user.setName("Puneet2");
+		user.setAge(22);
+	
+		session.save(user);
+		user.setAge(23);
+		UserDetails user1=(UserDetails)session.merge(user);
+		System.out.println(user==user1);
+		user1.setAge(24);
+		
 	}
 
     /**
